@@ -1,0 +1,18 @@
+{
+    "name": "phpcources/blog",
+    "description": "example project",
+    "authors": [
+        {
+            "name": "Nataly",
+            "email": "nataly77777@ukr.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "silex/silex": "2.0.*@dev",
+        "illuminate/database": "*"
+    },
+    "autoload":{
+        "classmap":["models/"]
+    }
+}

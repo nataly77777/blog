@@ -4,7 +4,6 @@ require_once __DIR__.'/vendor/autoload.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
-
 $capsule = new Capsule;
 
 $capsule->addConnection([
@@ -18,9 +17,7 @@ $capsule->addConnection([
     'prefix'    => '',
 ]);
 
-// Make this Capsule instance available globally via static methods... (optional)
 $capsule->setAsGlobal();
-
 $capsule->bootEloquent();
 
 function render($view, $params=array()){
@@ -40,25 +37,18 @@ $app->get('/', function(){
 		
 	));
 });
-	
-$app->get('/blog/view{slug}', function($slug){
-	return 'Hello World!';
-});
 
 $app->get('/blog/add', function(){
 $article=new Articles;
 
-var_dump($article);
+$article->title=$_GET["title"];
+$article->body=$_GET["body"];
+$article->slug=$_GET["slug"];
+$article->user_id=$_GET["user_id"];
 
-$article ->title="title";
-$article->body="body";
-$article->slug="slug";
-$article->user_id=125;
+$article->save();
 
-
-var_dump($article ->save());
-die();
-// return render("add");
+return render("add");
 });
 
 $app->get('/blog/edit/{id}', function($id){
@@ -69,8 +59,10 @@ $app->get('/blog/remove/{id}', function($id){
 	return 'Hello World!';
 });
 
+	
+$app->get('/blog/view{slug}', function($slug){
+	return 'Hello World!';
+});
 $app->run();  
-
-
 ?>
 

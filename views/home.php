@@ -11,7 +11,7 @@
 			<tr>
 				<td style="border:1px solid lime;"><?php echo $key->title; ?></td>
 				<td style="border:1px solid lime;"><a href="/index.php/blog/edit/<?php echo $key->id; ?>"><input type="button" value="Изменить"></a></td>
-				<td style="border:1px solid lime;"><a href="#"><input type="button" value="Удалить"></a></td>
+				<td style="border:1px solid lime;"><a href="/index.php/blog/remove/<?php echo $key->id; ?>"><input type="button" value="Удалить"></a></td>
 			</tr>
 			<?php };?>
 		</table>

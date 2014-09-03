@@ -4,7 +4,8 @@
 	<body>
 		<h1>Мои статьи</h1>
 		<button><a href="/index.php/blog/add">Добавить новую статью</a></button>
-		<table style="border:3px solid violet;">
+
+		<table style="border:3px solid violet; margin-top:20px;">
 		<?php 
 		$article = Articles::get();
 		foreach($article as $key){?>

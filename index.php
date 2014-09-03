@@ -58,16 +58,20 @@ return $app->redirect('/');
 $app->get('/blog/edit/{id}', function($id){
 	$article= Articles::find($id);
 	echo $article->title;
-
-	return render("edit");
-
-});
-$app->post('/blog/edit/{id}', function($id){
 	$article->title=$_POST["title"];
 	$article->body=$_POST["body"];
 	$article->slug=$_POST["slug"];
 
 	$article->save();
+	return render("edit");
+
+});
+$app->post('/blog/edit/{id}', function($id){
+	// $article->title=$_POST["title"];
+	// $article->body=$_POST["body"];
+	// $article->slug=$_POST["slug"];
+
+	// $article->save();
 });
 
 $app->get('/blog/remove/{id}', function($id){

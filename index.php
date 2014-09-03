@@ -33,30 +33,47 @@ $app=new Silex\Application();
 $app['debug'] = true;
 
 $app->get('/', function(){
-	return render("home", array(
-		
-	));
+
+// $article = Articles::get();
+
+	return render("home");
 });
 
 $app->get('/blog/add', function(){
+	return render("add");
+});
+$app->post('/blog/add', function() use ($app){
+
 $article=new Articles;
 
-$article->title=$_GET["title"];
-$article->body=$_GET["body"];
-$article->slug=$_GET["slug"];
-$article->user_id=$_GET["user_id"];
-
+$article->title=$_POST["title"];
+$article->body=$_POST["body"];
+$article->slug=$_POST["slug"];
+$article ->user_id=125;
 $article->save();
 
-return render("add");
+return $app->redirect('/');
 });
 
 $app->get('/blog/edit/{id}', function($id){
-	return 'Hello World!';
+	$article= Articles::find($id);
+	echo $article->title;
+
+	return render("edit");
+
+});
+$app->post('/blog/edit/{id}', function($id){
+	$article->title=$_POST["title"];
+	$article->body=$_POST["body"];
+	$article->slug=$_POST["slug"];
+
+	$article->save();
 });
 
 $app->get('/blog/remove/{id}', function($id){
-	return 'Hello World!';
+	$article = Articles::find($id);
+	$article->delete();
+	return render("home");
 });
 
 	
@@ -66,3 +83,11 @@ $app->get('/blog/view{slug}', function($slug){
 $app->run();  
 ?>
 
+<!-- SELECT * FROM users Where name='John' LIMIT 1 ORDER BY name,id DESC -->
+<!-- SELECT COUNT( id)  FROM comments;
+
+SELECT * ,(SELECT COUNT(id) FROM comments WHERE comments.article_id=articles.id)
+ AS comcount
+FROM articles ; 
+SELECT * FROM articles WHERE body LIKE '%ipsun%';
+ -->

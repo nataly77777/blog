@@ -29,14 +29,29 @@ function render($view, $params=array()){
 	return $view;
 }
 
+function slug($str, $delimiter='-') 
+{
+    $cyrylicFrom = array('А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я', 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я');
+    $cyrylicTo   = array('A', 'B', 'W', 'G', 'D', 'Ie', 'Io', 'Z', 'Z', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'F', 'Ch', 'C', 'Tch', 'Sh', 'Shtch', '', 'Y', '', 'E', 'Iu', 'Ia', 'a', 'b', 'w', 'g', 'd', 'ie', 'io', 'z', 'z', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'f', 'ch', 'c', 'tch', 'sh', 'shtch', '', 'y', '', 'e', 'iu', 'ia'); 
+
+    $clean = str_replace($cyrylicFrom, $cyrylicTo, $str); 
+    $clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
+    $clean = strtolower($clean);
+    $clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
+
+    return trim($clean, '-');
+}
+
+
 $app=new Silex\Application();
 $app['debug'] = true;
 
 $app->get('/', function(){
 
-// $article = Articles::get();
-
-	return render("home");
+$article = Articles::all();
+    return render("home", array(
+        "article" => $article
+    ));
 });
 
 $app->get('/blog/add', function(){
@@ -48,30 +63,48 @@ $article=new Articles;
 
 $article->title=$_POST["title"];
 $article->body=$_POST["body"];
-$article->slug=$_POST["slug"];
-$article ->user_id=125;
+
+$slug=slug($_POST["title"]);
+$check_slug=Articles::where('slug', '=', '$slug')->first();
+
+if($check_slug){
+	$article->slug=$check_slug+1;
+};
+
+// $article->slug=slug($_POST["title"]);
+
+$article->user_id=125;
 $article->save();
 
 return $app->redirect('/');
 });
 
-$app->get('/blog/edit/{id}', function($id){
-	$article= Articles::find($id);
-	echo $article->title;
-	$article->title=$_POST["title"];
-	$article->body=$_POST["body"];
-	$article->slug=$_POST["slug"];
+$app->get('/blog/view/{slug}', function($slug){
+	$article=Articles::where("slug", "=", $slug)->gett();
 
-	$article->save();
-	return render("edit");
+	return render("view", array(
+		"article"=>$article
+		));
+});
+
+$app->get('/blog/edit/{id}', function($id){
+
+	$article= Articles::find($id);
+
+	return render("edit", array(
+   "article" => $article
+   ));
 
 });
-$app->post('/blog/edit/{id}', function($id){
-	// $article->title=$_POST["title"];
-	// $article->body=$_POST["body"];
-	// $article->slug=$_POST["slug"];
 
-	// $article->save();
+$app->post('/blog/edit/{id}', function($id){
+	Capsule::table('articles')
+            ->where('id', $id )
+            ->update(array('title'=> $_POST["title"],
+            	     'body' => $_POST["body"],
+                     'slug' => $_POST["slug"]
+            ));
+   return render("home");
 });
 
 $app->get('/blog/remove/{id}', function($id){
@@ -80,10 +113,8 @@ $app->get('/blog/remove/{id}', function($id){
 	return render("home");
 });
 
-	
-$app->get('/blog/view{slug}', function($slug){
-	return 'Hello World!';
-});
+
+
 $app->run();  
 ?>
 
